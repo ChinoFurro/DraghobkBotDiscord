@@ -6,6 +6,8 @@ const Client = require('./client/Client');
 const config = require('./config.json');
 const {Player} = require('discord-player');
 
+const Token = "MTIyOTQ5NDA0MTM0MzgyMzk0NQ.GzZzH8.RwW65lzTFRqPlNhkoimxCxIk9TSZyI7bo_nJj0"
+
 const client = new Client();
 client.commands = new Discord.Collection();
 
@@ -132,4 +134,4 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(Token);
