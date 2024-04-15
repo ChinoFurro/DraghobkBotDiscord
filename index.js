@@ -1,12 +1,9 @@
-require("dotenv").config();
-
 const fs = require('fs');
 const Discord = require('discord.js');
 const Client = require('./client/Client');
 const config = require('./config.json');
 const {Player} = require('discord-player');
-
-const Token = "MTIyOTQ5NDA0MTM0MzgyMzk0NQ.GzZzH8.RwW65lzTFRqPlNhkoimxCxIk9TSZyI7bo_nJj0"
+const path = require('path');
 
 const client = new Client();
 client.commands = new Discord.Collection();
@@ -134,4 +131,5 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
-client.login(Token);
+client.login(config.TOKENDISC);
+//console.log(config.TOKENDISC); // remove this after you've confirmed it is working
