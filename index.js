@@ -4,6 +4,7 @@ const Client = require('./client/Client');
 const config = require('./config.json');
 const {Player} = require('discord-player');
 const path = require('path');
+const ffmpeg = require('@ffmpeg-installer/ffmpeg');
 
 const client = new Client();
 client.commands = new Discord.Collection();
@@ -20,22 +21,6 @@ console.log(client.commands);
 const player = new Player(client);
 
 player.extractors.loadDefault().then(r => console.log('Extractors loaded successfully'));
-
-// Still needs to be refactored for 0.6
-/*player.events.on('connection', (queue) => {
-    queue.connection.connec.voiceConnection.on('stateChange', (oldState, newState) => {
-      const oldNetworking = Reflect.get(oldState, 'networking');
-      const newNetworking = Reflect.get(newState, 'networking');
-
-      const networkStateChangeHandler = (oldNetworkState, newNetworkState) => {
-        const newUdp = Reflect.get(newNetworkState, 'udp');
-        clearInterval(newUdp?.keepAliveInterval);
-      }
-
-      oldNetworking?.off('stateChange', networkStateChangeHandler);
-      newNetworking?.on('stateChange', networkStateChangeHandler);
-    });
-});*/
 
 player.events.on('audioTrackAdd', (queue, song) => {
     queue.metadata.channel.send(`🎶 | Song **${song.title}** added to the queue!`);
@@ -59,27 +44,16 @@ player.events.on('emptyChannel', queue => {
 
 player.events.on('emptyQueue', queue => {
     queue.metadata.channel.send('✅ | Queue finished!');
-    // Delete queue and disconnect from voice channel
-    queue.delete();
+    // Delete queue and disconnect from voice channel at 10sec
+setTimeout(function(){
+queue.delete();
+},10000);
+    
 });
 
 player.events.on('error', (queue, error) => {
     console.log(`[${queue.guild.name}] Error emitted from the connection: ${error.message}`);
 });
-
-// For debugging
-/*player.on('debug', async (message) => {
-    console.log(`General player debug event: ${message}`);
-});
-
-player.events.on('debug', async (queue, message) => {
-    console.log(`Player debug event: ${message}`);
-});
-
-player.events.on('playerError', (queue, error) => {
-    console.log(`Player error event: ${error.message}`);
-    console.log(error);
-});*/
 
 client.on('ready', function () {
     console.log('Ready!');
@@ -111,23 +85,6 @@ client.on('messageCreate', async message => {
                 message.reply('Could not deploy commands! Make sure the bot has the application.commands permission!');
                 console.error(err);
             });
-    }
-});
-
-client.on('interactionCreate', async interaction => {
-    const command = client.commands.get(interaction.commandName.toLowerCase());
-
-    try {
-        if (interaction.commandName == 'ban' || interaction.commandName == 'userinfo') {
-            command.execute(interaction, client);
-        } else {
-            command.execute(interaction);
-        }
-    } catch (error) {
-        console.error(error);
-        await interaction.followUp({
-            content: 'There was an error trying to execute that command!',
-        });
     }
 });
 
